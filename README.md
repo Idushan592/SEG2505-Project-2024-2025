@@ -18,3 +18,4 @@ Assembler :
 Update on DatabaseHelper
 Added new classes (Admin, Orders)
 Added xml files for admin login page and orders
+Added CircleCI

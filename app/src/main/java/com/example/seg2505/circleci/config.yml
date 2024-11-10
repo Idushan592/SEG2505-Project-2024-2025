@@ -1,0 +1,56 @@
+version: 2.1
+
+executors:
+  android-executor:
+    docker:
+      - image: circleci/android:api-30 # Use the CircleCI Android image with API 30
+    working_directory: ~/project
+
+jobs:
+  build:
+    executor: android-executor
+    steps:
+      - checkout  # Pull the code from your repository
+      - run:
+          name: Install dependencies
+          command: |
+            wget https://services.gradle.org/distributions/gradle-7.2-bin.zip
+            unzip gradle-7.2-bin.zip
+            export PATH=$PATH:$PWD/gradle-7.2/bin
+      - run:
+          name: Build the project
+          command: ./gradlew build # Change this to your build command
+
+  test:
+    executor: android-executor
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            wget https://services.gradle.org/distributions/gradle-7.2-bin.zip
+            unzip gradle-7.2-bin.zip
+            export PATH=$PATH:$PWD/gradle-7.2/bin
+      - run:
+          name: Run Unit Tests
+          command: ./gradlew testDebugUnitTest # Run unit tests (adjust if necessary)
+
+  deploy:
+    executor: android-executor
+    steps:
+      - checkout
+      - run:
+          name: Build Release APK
+          command: ./gradlew assembleRelease # Command to build your release APK
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - test
